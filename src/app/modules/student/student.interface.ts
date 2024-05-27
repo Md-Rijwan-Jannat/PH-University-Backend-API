@@ -43,7 +43,6 @@ export interface IStudent {
 }
 
 export interface IStudentMethods {
-  // eslint-disable-next-line no-unused-vars
   isUserExists(id: string): Promise<IStudent | null>;
 }
 
