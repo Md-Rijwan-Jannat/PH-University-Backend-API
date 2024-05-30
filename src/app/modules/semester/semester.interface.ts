@@ -34,35 +34,17 @@ export type TSemesterCode =
   | "07"
   | "08";
 
-export type TSemesterExam = "Meet Tram Exam" | "Semester Final Exam";
-
-export type TMainDepartment =
-  | "Mechanical Engineering"
-  | "Electrical Engineering"
-  | "Civil Engineering"
-  | "Computer Science"
-  | "Electronics and Communication"
-  | "Automobile Engineering"
-  | "Information Technology"
-  | "Chemical Engineering"
-  | "Biomedical Engineering"
-  | "Environmental Engineering"
-  | "Industrial Engineering";
-
-export type TChildDepartment = {
-  mainDepartment: TMainDepartment;
-  id: string;
-  name: string;
-};
+// Semester code validation
+export interface TSemesterCodeData {
+  [key: string]: string;
+}
 
 export interface ISemester {
   name: TSemesterName;
-  year: Date;
+  year: string;
   code: TSemesterCode;
   startMonth: TMonths;
   endMonth: TMonths;
-  exam: TSemesterExam;
-  department: TMainDepartment;
   childDepartment: string;
   isDeleted: boolean;
 }

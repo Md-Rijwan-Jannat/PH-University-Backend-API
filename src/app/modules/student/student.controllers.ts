@@ -28,12 +28,12 @@ const getSingleStudent = catchAsync(async (req, res) => {
 
 const deleteStudent = catchAsync(async (req, res) => {
   const { _id } = req.query;
-  const student = await StudentServices.deleteStudentFromDB(_id as string);
+  const result = await StudentServices.deleteStudentFromDB(_id as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Student is deleted!",
-    data: student,
+    data: result,
   });
 });
 

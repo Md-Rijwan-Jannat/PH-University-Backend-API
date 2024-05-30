@@ -39,6 +39,7 @@ export interface IStudent {
   guardian: IGuardian;
   profileImage: string;
   academicDepartment: string;
+  admissionSemester: string;
   isDeleted: boolean;
 }
 

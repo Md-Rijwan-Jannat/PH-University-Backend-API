@@ -19,7 +19,11 @@ const getSingleStudentFromDB = async (_id: string) => {
 
 // delete student
 const deleteStudentFromDB = async (_id: string) => {
-  const result = await Student.updateOne({ _id }, { isDeleted: true });
+  const result = await Student.findOneAndUpdate(
+    { _id },
+    { isDeleted: true },
+    { new: true },
+  );
   return result;
 };
 

@@ -4,30 +4,17 @@ import {
   ISemester,
   TMonths,
   TSemesterCode,
-  TSemesterExam,
   TSemesterName,
-  TMainDepartment,
-  TChildDepartment,
 } from "./semester.interface";
-import { DepartmentDetails } from "../../utils/department.mapping";
+import { SemesterDetails } from "./semester.constants";
 
-export const months: readonly TMonths[] = DepartmentDetails.Months;
+export const months: readonly TMonths[] = SemesterDetails.Months;
 
 export const semesterName: readonly TSemesterName[] =
-  DepartmentDetails.SemesterNames;
+  SemesterDetails.SemesterNames;
 
 export const semesterCode: readonly TSemesterCode[] =
-  DepartmentDetails.SemesterCodes;
-
-export const semesterExam: readonly TSemesterExam[] =
-  DepartmentDetails.SemesterExams;
-
-export const mainDepartments: readonly TMainDepartment[] =
-  DepartmentDetails.MainDepartments;
-
-export const childDepartments: readonly TChildDepartment[] = Object.values(
-  DepartmentDetails.DepartmentMapping,
-).flat();
+  SemesterDetails.SemesterCodes;
 
 export const semesterSchema = new Schema<ISemester>(
   {
@@ -37,7 +24,7 @@ export const semesterSchema = new Schema<ISemester>(
       required: true,
     },
     year: {
-      type: Date,
+      type: String,
       required: true,
       trim: true,
     },
@@ -56,30 +43,6 @@ export const semesterSchema = new Schema<ISemester>(
       enum: months,
       required: true,
     },
-    exam: {
-      type: String,
-      enum: semesterExam,
-      required: true,
-    },
-    department: {
-      type: String,
-      enum: mainDepartments,
-      required: true,
-    },
-    childDepartment: {
-      type: String,
-      required: true,
-      validate: {
-        validator: function (value: string) {
-          const mainDepartment = (this as any).department as TMainDepartment;
-          return DepartmentDetails.DepartmentMapping[mainDepartment].some(
-            (child) => child.name === value,
-          );
-        },
-        message: (props) =>
-          `${props.value} is not a valid child department for the selected main department.`,
-      },
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -89,5 +52,16 @@ export const semesterSchema = new Schema<ISemester>(
     timestamps: true,
   },
 );
+
+semesterSchema.pre("save", async function (next) {
+  const isSemesterExists = await Semester.findOne({
+    name: this.name,
+    year: this.year,
+  });
+  if (isSemesterExists) {
+    throw new Error("Semester already exists!");
+  }
+  next();
+});
 
 export const Semester = model<ISemester>("Semester", semesterSchema);

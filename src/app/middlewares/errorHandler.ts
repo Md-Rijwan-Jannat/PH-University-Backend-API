@@ -5,7 +5,7 @@ import httpStatus from "http-status";
 const notFoundErrorHandler = (req: Request, res: Response) => {
   res.status(httpStatus.NOT_FOUND).json({
     success: false,
-    status: "Route error!",
+    status: httpStatus.NOT_FOUND,
     message: "API not found",
     error: "",
   });
@@ -23,9 +23,9 @@ const globalErrorHandler = (
     return next(err);
   }
   res.status(err.status || 500).json({
+    status: httpStatus.INTERNAL_SERVER_ERROR,
     success: false,
-    status: "Global error!",
-    message: "Internal server error",
+    message: err.message || "Internal server error",
     err,
   });
 };
