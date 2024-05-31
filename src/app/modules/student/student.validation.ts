@@ -100,10 +100,6 @@ const createStudentValidationSchema = z.object({
         "Local guardian is required",
       ),
       guardian: guardianValidationSchema.describe("Guardian is required"),
-      academicDepartment: z
-        .string()
-        .trim()
-        .describe("Student avatar is required"),
       profileImage: z.string().trim().describe("Student avatar is required"),
     }),
   }),

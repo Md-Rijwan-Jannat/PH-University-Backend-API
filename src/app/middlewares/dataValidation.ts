@@ -24,7 +24,7 @@ export async function preValidationCheck(
   try {
     const existingDoc = await model.findOne(query);
     if (existingDoc) {
-      throw new Error(errorMessage);
+      throw new AppError(httpStatus.NOT_FOUND, errorMessage);
     }
     next();
   } catch (error) {

@@ -8,6 +8,8 @@ import {
   TSemesterName,
 } from "./semester.interface";
 import { SemesterDetails } from "./semester.constants";
+import { AppError } from "../../middlewares/errorHandler";
+import httpStatus from "http-status";
 
 export const months: readonly TMonths[] = SemesterDetails.Months;
 
@@ -61,7 +63,10 @@ semesterSchema.pre("save", async function (next) {
   });
 
   if (isExistSemester) {
-    throw new Error("This semester is already exists!");
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "This semester is already exists!",
+    );
   }
 
   next();
@@ -74,7 +79,7 @@ semesterSchema.pre("findOneAndUpdate", async function (next) {
   const isExistingSemester = await Semester.findOne(query);
 
   if (!isExistingSemester) {
-    throw new Error("This semester doesn't exist!");
+    throw new AppError(httpStatus.NOT_FOUND, "This semester doesn't exist!");
   }
 
   console.log(query._id, isExistingSemester);
@@ -88,7 +93,7 @@ semesterSchema.static("findOneOrThrowError", async function (id: string) {
     _id: id,
   });
   if (!Semester) {
-    throw new Error("This semester doesn't exist!");
+    throw new AppError(httpStatus.NOT_FOUND, "This semester doesn't exist!");
   }
   return Semester;
 });

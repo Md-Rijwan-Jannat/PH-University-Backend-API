@@ -40,7 +40,5 @@ export const generateSemesterId = async (payload: ISemester) => {
   console.log(incrementId);
   incrementId = `${payload.year}${payload.code}${incrementId}`;
 
-  console.log(await findLastStudent());
-
   return incrementId;
 };

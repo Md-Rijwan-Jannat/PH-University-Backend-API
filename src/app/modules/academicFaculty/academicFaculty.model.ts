@@ -1,3 +1,5 @@
+import httpStatus from "http-status";
+import { AppError } from "../../middlewares/errorHandler";
 import {
   IAcademicFaculty,
   IAcademicFacultyModel,
@@ -32,7 +34,7 @@ academicFacultySchema.pre("save", async function (next) {
   });
 
   if (isExistFaculty) {
-    throw new Error("This faculty is already exists!");
+    throw new AppError(httpStatus.NOT_FOUND, "This faculty is already exists!");
   }
 
   next();
@@ -45,7 +47,7 @@ academicFacultySchema.pre("findOneAndUpdate", async function (next) {
   const isExistingFaculty = await AcademicFaculty.findOne(query);
 
   if (!isExistingFaculty) {
-    throw new Error("This faculty doesn't exist!");
+    throw new AppError(httpStatus.NOT_FOUND, "This faculty doesn't exist!");
   }
 
   console.log(query._id, isExistingFaculty);
@@ -61,7 +63,7 @@ academicFacultySchema.static(
       _id: id,
     });
     if (!Faculty) {
-      throw new Error("This faculty doesn't exist!");
+      throw new AppError(httpStatus.NOT_FOUND, "This faculty doesn't exist!");
     }
     return Faculty;
   },

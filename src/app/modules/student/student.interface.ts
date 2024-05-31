@@ -1,3 +1,4 @@
+// student.interface.ts
 import { Model, Types } from "mongoose";
 
 export interface IStudentName {
@@ -23,7 +24,6 @@ export interface ILocalGuardian {
 }
 
 export interface IStudent {
-  _id: string;
   id: string;
   user: Types.ObjectId;
   name: IStudentName;
@@ -33,21 +33,17 @@ export interface IStudent {
   email: string;
   dateOfBirth: string;
   contactNo: string;
+  emergencyContactNo: string;
   presentAddress: string;
   permanentAddress: string;
-  emergencyContactNo: string;
   localGuardian: ILocalGuardian;
   guardian: IGuardian;
   profileImage: string;
-  academicDepartment: string;
-  admissionSemester: string;
+  academicDepartment: Types.ObjectId;
+  admissionSemester: Types.ObjectId;
   isDeleted: boolean;
 }
 
-export interface IStudentMethods {
-  isUserExists(id: string): Promise<IStudent | null>;
-}
-
 export interface IStudentModel extends Model<IStudent> {
-  findOneOrThrowError: (id: string) => Promise<IStudent>;
+  findOneOrThrowError(id: string): Promise<IStudent>;
 }

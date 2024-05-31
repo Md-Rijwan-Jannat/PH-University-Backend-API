@@ -1,13 +1,16 @@
+// student.model.ts
 import { Schema, model } from "mongoose";
 import {
-  IStudent,
-  IStudentName,
   IGuardian,
   ILocalGuardian,
+  IStudent,
   IStudentModel,
+  IStudentName,
 } from "./student.interface";
+import { AppError } from "../../middlewares/errorHandler";
+import httpStatus from "http-status";
 
-// Student name schema
+// student name schema
 const studentNameSchema = new Schema<IStudentName>({
   firstName: {
     type: String,
@@ -25,7 +28,7 @@ const studentNameSchema = new Schema<IStudentName>({
   },
 });
 
-// Student guardian schema
+// student guardian schema
 const guardianSchema = new Schema<IGuardian>({
   fatherName: {
     type: String,
@@ -51,7 +54,6 @@ const guardianSchema = new Schema<IGuardian>({
   motherContactNo: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
   },
   motherOccupation: {
@@ -61,39 +63,20 @@ const guardianSchema = new Schema<IGuardian>({
   },
 });
 
-// Student local guardian schema
+// student local guardian schema
 const localGuardianSchema = new Schema<ILocalGuardian>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  contactNo: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  address: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
+  name: { type: String, required: true, trim: true },
+  contactNo: { type: String, required: true, unique: true, trim: true },
+  address: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, trim: true },
 });
 
-// Student main schema
+// student schema
 const studentSchema = new Schema<IStudent, IStudentModel>(
   {
     id: {
       type: String,
       required: true,
-      trim: true,
       unique: true,
     },
     user: {
@@ -121,21 +104,25 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
       enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
       trim: true,
     },
-    dateOfBirth: {
-      type: String,
-      required: true,
-      trim: true,
-    },
     email: {
       type: String,
       required: true,
       unique: true,
       trim: true,
     },
+    dateOfBirth: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     contactNo: {
       type: String,
       required: true,
-      unique: true,
+      trim: true,
+    },
+    emergencyContactNo: {
+      type: String,
+      required: true,
       trim: true,
     },
     presentAddress: {
@@ -146,12 +133,6 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
     permanentAddress: {
       type: String,
       required: true,
-      trim: true,
-    },
-    emergencyContactNo: {
-      type: String,
-      required: true,
-      unique: true,
       trim: true,
     },
     localGuardian: {
@@ -165,22 +146,21 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
     profileImage: {
       type: String,
       required: true,
-      trim: true,
-    },
-    academicDepartment: {
-      type: String,
-      required: true,
     },
     admissionSemester: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
+      ref: "Semester",
     },
-    isDeleted: {
-      type: Boolean,
-      default: false,
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "AcademicDepartment",
     },
+    isDeleted: { type: Boolean, default: false },
   },
   {
+    timestamps: true,
     toJSON: {
       virtuals: true,
     },
@@ -192,12 +172,11 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
 
 // virtual
 studentSchema.virtual("fullName").get(function () {
-  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
+  return `${this.name.firstName} ${this.name.middleName ? this.name.middleName + " " : ""}${this.name.lastName}`;
 });
 
 // Pre-find hooks
 studentSchema.pre("find", function (next) {
-  console.log("Pre-find hook triggered for find");
   this.find({ isDeleted: { $eq: false } });
   next();
 });
@@ -205,64 +184,42 @@ studentSchema.pre("find", function (next) {
 studentSchema.pre("findOne", function (next) {
   this.findOne({ isDeleted: { $eq: false } });
   next();
-  console.log("Pre-findOne hook triggered for find");
 });
 
 studentSchema.pre("aggregate", function (next) {
   this.pipeline().unshift({ $match: { isDeleted: { $eq: false } } });
-
-  next();
-});
-
-studentSchema.pre("save", async function (next) {
-  const isExistStudent = await Student.findOne({
-    name: this.id,
-  });
-
-  if (isExistStudent) {
-    throw new Error("This student is already exists!");
-  }
-
   next();
 });
 
 // Student can't be a duplicate
 studentSchema.pre("save", async function (next) {
   const isExistStudent = await Student.findOne({
-    name: this.id,
+    id: this.id,
   });
 
   if (isExistStudent) {
-    throw new Error("This student is already exists!");
+    throw new AppError(httpStatus.NOT_FOUND, "This student already exists!");
   }
-
   next();
 });
 
 // Unknown _id validation error for update
 studentSchema.pre("findOneAndUpdate", async function (next) {
   const query = this.getQuery();
-
   const isExistingStudent = await Student.findOne(query);
-
   if (!isExistingStudent) {
-    throw new Error("This student doesn't exist!");
+    throw new AppError(httpStatus.NOT_FOUND, "This student doesn't exist!");
   }
-
-  console.log(query._id, isExistingStudent);
-
   next();
 });
 
 // Custom static method to check existence
 studentSchema.static("findOneOrThrowError", async function (id: string) {
-  const Student: IStudent | null = await this.findOne({
-    id: id,
-  });
-  if (!Student) {
-    throw new Error("This student doesn't exist!");
+  const student: IStudent | null = await this.findOne({ id });
+  if (!student) {
+    throw new AppError(httpStatus.NOT_FOUND, "This student doesn't exist!");
   }
-  return Student;
+  return student;
 });
 
 export const Student = model<IStudent, IStudentModel>("Student", studentSchema);

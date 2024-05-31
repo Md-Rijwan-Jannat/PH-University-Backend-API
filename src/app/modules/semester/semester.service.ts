@@ -6,7 +6,7 @@ import { Semester } from "./semester.model";
 const createSemesterIntoDB = async (payload: ISemester) => {
   // Semester code validation
   if (SemesterDetails.semesterCodeData[payload.name] !== payload.code) {
-    throw new Error("Invalid semester code!");
+    throw new AppError(httpStatus.NOT_FOUND, "Invalid semester code!");
   }
 
   const result = await Semester.create(payload);
@@ -35,7 +35,7 @@ const updateSemesterDetailsFromDB = async (
     payload.code &&
     SemesterDetails.semesterCodeData[payload.name] !== payload.code
   ) {
-    throw new Error("Invalid semester code!");
+    throw new AppError(httpStatus.NOT_FOUND, "Invalid semester code!");
   }
   const result = await Semester.findOneAndUpdate(
     {

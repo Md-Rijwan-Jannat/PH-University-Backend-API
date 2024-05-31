@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 
-// not found error handler
+// route error handler
 const notFoundErrorHandler = (req: Request, res: Response) => {
   res.status(httpStatus.NOT_FOUND).json({
     success: false,
@@ -18,17 +18,38 @@ const globalErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.error("Global error handler:", err); // Log the error
   if (res.headersSent) {
     return next(err);
   }
-  res.status(err.status || 500).json({
-    status: httpStatus.INTERNAL_SERVER_ERROR,
+
+  const statusCode = err instanceof AppError ? err.statusCode : 500;
+  const message = err.message || "Internal server error";
+
+  return res.status(statusCode).json({
     success: false,
-    message: err.message || "Internal server error",
-    err,
+    message: message,
+    error: {
+      status: statusCode,
+      stack: err.stack,
+    },
   });
 };
+
+// Not found error handler
+export class AppError extends Error {
+  public statusCode: number;
+
+  constructor(statusCode: number, message: string, stack = "") {
+    super(message);
+    this.statusCode = statusCode;
+
+    if (stack) {
+      this.stack = stack;
+    } else {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+}
 
 export const ErrorHandler = {
   notFoundErrorHandler,
