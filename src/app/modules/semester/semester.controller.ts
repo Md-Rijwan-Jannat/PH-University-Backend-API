@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import { catchAsync } from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { SemesterServices } from "./semester.service";
+import { Semester } from "./semester.model";
 
 // Semester create controller
 const createSemester = catchAsync(async (req, res) => {
@@ -29,8 +30,9 @@ const getAllSemester = catchAsync(async (req, res) => {
 // Get single semester controller
 const getSingleSemester = catchAsync(async (req, res) => {
   const { semesterId } = req.params;
+  const semester = await Semester.findOneOrThrowError(semesterId);
   const result = await SemesterServices.getSingleSemesterFromDB(
-    semesterId as string,
+    semester._id as string,
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,

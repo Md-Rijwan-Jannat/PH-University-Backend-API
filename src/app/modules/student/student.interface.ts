@@ -23,6 +23,7 @@ export interface ILocalGuardian {
 }
 
 export interface IStudent {
+  _id: string;
   id: string;
   user: Types.ObjectId;
   name: IStudentName;
@@ -47,8 +48,6 @@ export interface IStudentMethods {
   isUserExists(id: string): Promise<IStudent | null>;
 }
 
-export type TStudentModel = Model<
-  IStudent,
-  Record<string, never>,
-  IStudentMethods
->;
+export interface IStudentModel extends Model<IStudent> {
+  findOneOrThrowError: (id: string) => Promise<IStudent>;
+}

@@ -1,5 +1,4 @@
 import config from "../../config";
-import { ISemester } from "../semester/semester.interface";
 import { Semester } from "../semester/semester.model";
 import { IStudent } from "../student/student.interface";
 import { Student } from "../student/student.model";

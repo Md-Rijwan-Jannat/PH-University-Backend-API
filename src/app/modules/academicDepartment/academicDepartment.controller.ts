@@ -2,6 +2,7 @@ import { AcademicDepartmentServices } from "./academicDepartment.service";
 import { catchAsync } from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status";
+import { AcademicDepartment } from "./academicDepartment.model";
 
 // Create academic department controller
 const createAcademicDepartment = catchAsync(async (req, res) => {
@@ -33,10 +34,14 @@ const getAllAcademicDepartment = catchAsync(async (req, res) => {
 // Get single department controller
 const getSingleAcademicDepartment = catchAsync(async (req, res) => {
   const { departmentId } = req.params;
+
+  const department = await AcademicDepartment.findOneOrThrowError(departmentId);
+
   const result =
     await AcademicDepartmentServices.getSingleAcademicDepartmentFromDB(
-      departmentId,
+      department._id,
     );
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

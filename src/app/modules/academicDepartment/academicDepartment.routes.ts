@@ -13,19 +13,10 @@ router.post(
   AcademicDepartmentControllers.createAcademicDepartment,
 );
 
-router.get(
-  "/",
-  Validation(
-    AcademicDepartmentValidation.updateAcademicDepartmentValidationSchema,
-  ),
-  AcademicDepartmentControllers.getAllAcademicDepartment,
-);
+router.get("/", AcademicDepartmentControllers.getAllAcademicDepartment);
 
 router.get(
   "/:departmentId",
-  Validation(
-    AcademicDepartmentValidation.updateAcademicDepartmentValidationSchema,
-  ),
   AcademicDepartmentControllers.getSingleAcademicDepartment,
 );
 

@@ -2,6 +2,7 @@
 import { Schema, model } from "mongoose";
 import {
   ISemester,
+  ISemesterModel,
   TMonths,
   TSemesterCode,
   TSemesterName,
@@ -16,7 +17,7 @@ export const semesterName: readonly TSemesterName[] =
 export const semesterCode: readonly TSemesterCode[] =
   SemesterDetails.SemesterCodes;
 
-export const semesterSchema = new Schema<ISemester>(
+export const semesterSchema = new Schema<ISemester, ISemesterModel>(
   {
     name: {
       type: String,
@@ -53,15 +54,46 @@ export const semesterSchema = new Schema<ISemester>(
   },
 );
 
+// Semester can't be a duplicate
 semesterSchema.pre("save", async function (next) {
-  const isSemesterExists = await Semester.findOne({
+  const isExistSemester = await Semester.findOne({
     name: this.name,
-    year: this.year,
   });
-  if (isSemesterExists) {
-    throw new Error("Semester already exists!");
+
+  if (isExistSemester) {
+    throw new Error("This semester is already exists!");
   }
+
   next();
 });
 
-export const Semester = model<ISemester>("Semester", semesterSchema);
+// Unknown _id validation error for update
+semesterSchema.pre("findOneAndUpdate", async function (next) {
+  const query = this.getQuery();
+
+  const isExistingSemester = await Semester.findOne(query);
+
+  if (!isExistingSemester) {
+    throw new Error("This semester doesn't exist!");
+  }
+
+  console.log(query._id, isExistingSemester);
+
+  next();
+});
+
+// Custom static method to check existence
+semesterSchema.static("findOneOrThrowError", async function (id: string) {
+  const Semester: ISemester | null = await this.findOne({
+    _id: id,
+  });
+  if (!Semester) {
+    throw new Error("This semester doesn't exist!");
+  }
+  return Semester;
+});
+
+export const Semester = model<ISemester, ISemesterModel>(
+  "Semester",
+  semesterSchema,
+);

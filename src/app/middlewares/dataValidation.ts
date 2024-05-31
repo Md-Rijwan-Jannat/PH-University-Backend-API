@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { Model, Document } from "mongoose";
 import { AnyZodObject } from "zod";
 
 const dataValidation = (schema: AnyZodObject) => {
@@ -13,5 +14,22 @@ const dataValidation = (schema: AnyZodObject) => {
     }
   };
 };
+
+export async function preValidationCheck(
+  model: Model<Document>,
+  query: any,
+  errorMessage: string,
+  next: (error?: any) => void,
+) {
+  try {
+    const existingDoc = await model.findOne(query);
+    if (existingDoc) {
+      throw new Error(errorMessage);
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
 
 export const Validation = dataValidation;

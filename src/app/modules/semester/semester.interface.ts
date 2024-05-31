@@ -1,3 +1,5 @@
+import { Model } from "mongoose";
+
 export type TMonths =
   | "January"
   | "February"
@@ -40,6 +42,7 @@ export interface TSemesterCodeData {
 }
 
 export interface ISemester {
+  _id: string;
   name: TSemesterName;
   year: string;
   code: TSemesterCode;
@@ -47,4 +50,8 @@ export interface ISemester {
   endMonth: TMonths;
   childDepartment: string;
   isDeleted: boolean;
+}
+
+export interface ISemesterModel extends Model<ISemester> {
+  findOneOrThrowError: (id: string) => Promise<ISemester>;
 }

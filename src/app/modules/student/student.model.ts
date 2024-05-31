@@ -4,8 +4,7 @@ import {
   IStudentName,
   IGuardian,
   ILocalGuardian,
-  TStudentModel,
-  IStudentMethods,
+  IStudentModel,
 } from "./student.interface";
 
 // Student name schema
@@ -89,7 +88,7 @@ const localGuardianSchema = new Schema<ILocalGuardian>({
 });
 
 // Student main schema
-const studentSchema = new Schema<IStudent, TStudentModel, IStudentMethods>(
+const studentSchema = new Schema<IStudent, IStudentModel>(
   {
     id: {
       type: String,
@@ -227,13 +226,43 @@ studentSchema.pre("save", async function (next) {
   next();
 });
 
-// Method to check if user exists
-studentSchema.methods.isUserExists = async function (id: string) {
-  const existingStudent = await Student.findOne({ id });
-  return existingStudent;
-};
+// Student can't be a duplicate
+studentSchema.pre("save", async function (next) {
+  const isExistStudent = await Student.findOne({
+    name: this.id,
+  });
 
-export const Student: TStudentModel = model<IStudent, TStudentModel>(
-  "Student",
-  studentSchema,
-);
+  if (isExistStudent) {
+    throw new Error("This student is already exists!");
+  }
+
+  next();
+});
+
+// Unknown _id validation error for update
+studentSchema.pre("findOneAndUpdate", async function (next) {
+  const query = this.getQuery();
+
+  const isExistingStudent = await Student.findOne(query);
+
+  if (!isExistingStudent) {
+    throw new Error("This student doesn't exist!");
+  }
+
+  console.log(query._id, isExistingStudent);
+
+  next();
+});
+
+// Custom static method to check existence
+studentSchema.static("findOneOrThrowError", async function (id: string) {
+  const Student: IStudent | null = await this.findOne({
+    id: id,
+  });
+  if (!Student) {
+    throw new Error("This student doesn't exist!");
+  }
+  return Student;
+});
+
+export const Student = model<IStudent, IStudentModel>("Student", studentSchema);
