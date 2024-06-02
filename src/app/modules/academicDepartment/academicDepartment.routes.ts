@@ -1,15 +1,15 @@
 import { AcademicDepartmentValidation } from "./academicDepartment.validation";
 import { AcademicDepartmentControllers } from "./academicDepartment.controller";
-import { Validation } from "../../middlewares/dataValidation";
+import { Validation as RequestValidation } from "../../middlewares/dataValidation";
 import { Router } from "express";
 
 const router = Router();
 
 router.post(
   "/create-academic-department",
-  Validation(
-    AcademicDepartmentValidation.createAcademicDepartmentValidationSchema,
-  ),
+  // RequestValidation(
+  //   AcademicDepartmentValidation.createAcademicDepartmentValidationSchema,
+  // ),
   AcademicDepartmentControllers.createAcademicDepartment,
 );
 
@@ -22,7 +22,7 @@ router.get(
 
 router.patch(
   "/:departmentId",
-  Validation(
+  RequestValidation(
     AcademicDepartmentValidation.updateAcademicDepartmentValidationSchema,
   ),
   AcademicDepartmentControllers.updateSingleAcademicDepartment,

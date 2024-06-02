@@ -19,7 +19,7 @@ const findLastStudent = async () => {
   return lastStudent?.id ? lastStudent.id : undefined;
 };
 
-export const generateSemesterId = async (payload: ISemester) => {
+export const generateStudentId = async (payload: ISemester) => {
   let currentId = (0).toString();
 
   const lastStudent = await findLastStudent();

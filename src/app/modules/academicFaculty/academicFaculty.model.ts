@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { AppError } from "../../middlewares/errorHandler";
+import { AppError } from "../../middlewares/appError";
 import {
   IAcademicFaculty,
   IAcademicFacultyModel,
@@ -35,6 +35,18 @@ academicFacultySchema.pre("save", async function (next) {
 
   if (isExistFaculty) {
     throw new AppError(httpStatus.NOT_FOUND, "This faculty is already exists!");
+  }
+
+  next();
+});
+
+//  Unknown _id validation error
+academicFacultySchema.pre("find", async function (next) {
+  const query = this.getQuery();
+  const isExistFaculty = await AcademicFaculty.findOne(query);
+
+  if (!isExistFaculty) {
+    throw new AppError(httpStatus.NOT_FOUND, "This faculty doesn't exists!");
   }
 
   next();

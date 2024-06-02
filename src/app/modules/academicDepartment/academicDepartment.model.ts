@@ -3,7 +3,7 @@ import {
   IAcademicDepartment,
   IAcademicDepartmentModel,
 } from "./academicDepartment.interface";
-import { AppError } from "../../middlewares/errorHandler";
+import { AppError } from "../../middlewares/appError";
 import httpStatus from "http-status";
 
 export const academicDepartmentSchema = new Schema<
@@ -33,16 +33,28 @@ export const academicDepartmentSchema = new Schema<
 );
 
 // Department can't be a duplicate
-academicDepartmentSchema.pre("save", async function (next) {
-  const isExistDepartment = await AcademicDepartment.findOne({
-    name: this.name,
-  });
+// academicDepartmentSchema.pre("save", async function (next) {
+//   const isExistDepartment = await AcademicDepartment.findOne({
+//     name: this.name,
+//   });
 
-  if (isExistDepartment) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "This department is already exists!",
-    );
+//   if (isExistDepartment) {
+//     throw new AppError(
+//       httpStatus.NOT_FOUND,
+//       "This department is already exists!",
+//     );
+//   }
+
+//   next();
+// });
+
+//  Unknown _id validation error
+academicDepartmentSchema.pre("find", async function (next) {
+  const query = this.getQuery();
+  const isExistDepartment = await AcademicDepartment.findOne(query);
+
+  if (!isExistDepartment) {
+    throw new AppError(httpStatus.NOT_FOUND, "This department doesn't exists!");
   }
 
   next();

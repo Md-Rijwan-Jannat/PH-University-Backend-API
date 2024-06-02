@@ -49,7 +49,10 @@ const updateSingleStudent = catchAsync(async (req, res) => {
 // Delete student controller
 const deleteStudent = catchAsync(async (req, res) => {
   const { studentId } = req.params;
-  const result = await StudentServices.deleteStudentFromDB(studentId as string);
+  const student = await Student.findOneOrThrowError(studentId as string);
+  const result = await StudentServices.deleteStudentFromDB(
+    student.id as string,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

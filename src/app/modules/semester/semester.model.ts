@@ -8,7 +8,7 @@ import {
   TSemesterName,
 } from "./semester.interface";
 import { SemesterDetails } from "./semester.constants";
-import { AppError } from "../../middlewares/errorHandler";
+import { AppError } from "../../middlewares/appError";
 import httpStatus from "http-status";
 
 export const months: readonly TMonths[] = SemesterDetails.Months;
@@ -67,6 +67,18 @@ semesterSchema.pre("save", async function (next) {
       httpStatus.NOT_FOUND,
       "This semester is already exists!",
     );
+  }
+
+  next();
+});
+
+//  Unknown _id validation error
+semesterSchema.pre("find", async function (next) {
+  const query = this.getQuery();
+  const isExistSemester = await Semester.findOne(query);
+
+  if (!isExistSemester) {
+    throw new AppError(httpStatus.NOT_FOUND, "This semester doesn't exists!");
   }
 
   next();

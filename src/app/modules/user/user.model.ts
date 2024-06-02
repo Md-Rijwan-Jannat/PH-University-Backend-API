@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import { IUser } from "./user.interface";
 import config from "../../config";
 import bcrypt from "bcrypt";
-import { AppError } from "../../middlewares/errorHandler";
+import { AppError } from "../../middlewares/appError";
 import httpStatus from "http-status";
 
 export const userSchema = new Schema<IUser>(

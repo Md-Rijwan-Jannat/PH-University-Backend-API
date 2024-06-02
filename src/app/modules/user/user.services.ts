@@ -5,8 +5,9 @@ import { IStudent } from "../student/student.interface";
 import { Student } from "../student/student.model";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
-import { generateSemesterId } from "./user.utils";
-import { AppError } from "../../middlewares/errorHandler";
+import { AppError } from "../../middlewares/appError";
+import { generateStudentId } from "./user.utils";
+import mongoose from "mongoose";
 
 const createStudentIntoDB = async (password: string, payload: IStudent) => {
   const userData: Partial<IUser> = {};
@@ -24,30 +25,37 @@ const createStudentIntoDB = async (password: string, payload: IStudent) => {
   }
 
   // student id set
-  userData.id = await generateSemesterId(semesterData);
+  userData.id = await generateStudentId(semesterData);
 
-  // Ensure the name field is an object
-  if (
-    typeof payload.name !== "object" ||
-    !payload.name.firstName ||
-    !payload.name.lastName
-  ) {
-    throw new AppError(httpStatus.NOT_FOUND, "Invalid student name data!");
-  }
+  // create transaction session
+  const session = await mongoose.startSession();
 
-  // create the user
-  const newUser = await User.create(userData);
+  try {
+    session.startTransaction();
+    // create the user (transaction-1)
+    const newUser = await User.create([userData], { session });
 
-  // create the student
-  if (Object.keys(newUser).length) {
-    payload.id = newUser.id;
-    payload.user = newUser._id;
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
+    }
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id;
 
-    const newStudent = await Student.create(payload);
+    // create the student (transaction-2)
+    const newStudent = await Student.create([payload], { session });
+
+    if (!newStudent.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create student");
+    }
+    await session.commitTransaction();
+    await session.endSession();
+
     return newStudent;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to create data");
   }
-
-  return newUser;
 };
 
 export const UserServices = {
