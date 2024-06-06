@@ -27,7 +27,7 @@ export interface IStudent {
   id: string;
   user: Types.ObjectId;
   name: IStudentName;
-  gender: "Male" | "Female";
+  gender: "male" | "female";
   religion: "Islam" | "Hindu" | "Christian" | "Buddhist" | "Others";
   bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
   email: string;
@@ -45,5 +45,5 @@ export interface IStudent {
 }
 
 export interface IStudentModel extends Model<IStudent> {
-  findOneOrThrowError(id: string): Promise<IStudent>;
+  isUserExists(id: string): Promise<IStudent | null>;
 }

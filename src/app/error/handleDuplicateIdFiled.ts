@@ -3,7 +3,7 @@ import { TErrorSources, TGenericResponseError } from "../interface/error";
 const handleDuplicateFiledError = (err: any): TGenericResponseError => {
   const regex = /dup key: \{ name: "([^"]+)" \}/;
 
-  const match = err?.message.match(regex);
+  const match = err?.message?.match(regex);
 
   const duplicateMessage = match[1];
 

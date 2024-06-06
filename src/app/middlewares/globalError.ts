@@ -10,12 +10,14 @@ import { HandleDuplicateFiledError } from "../error/handleDuplicateIdFiled";
 
 // global error handler
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  console.log(err);
+
   if (res.headersSent) {
     return next(err);
   }
 
-  let statusCode = err instanceof AppError ? err.statusCode : 404;
-  let message = err.message || "Internal server error";
+  let statusCode = 500;
+  let message = "Internal server error";
 
   let errorSources: TErrorSources = [
     {
@@ -44,6 +46,23 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     (statusCode = simplifiedError.statusCode),
       (message = simplifiedError.message),
       (errorSources = simplifiedError.errorSources);
+  } else if (err instanceof AppError) {
+    (statusCode = err?.statusCode),
+      (message = err?.message),
+      (errorSources = [
+        {
+          path: "",
+          message: err?.message,
+        },
+      ]);
+  } else if (err instanceof Error) {
+    (message = err?.message),
+      (errorSources = [
+        {
+          path: "",
+          message: err?.message,
+        },
+      ]);
   }
 
   return res.status(statusCode).json({

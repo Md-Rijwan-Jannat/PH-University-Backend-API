@@ -60,6 +60,7 @@ export const semesterSchema = new Schema<ISemester, ISemesterModel>(
 semesterSchema.pre("save", async function (next) {
   const isExistSemester = await Semester.findOne({
     name: this.name,
+    year: this.year,
   });
 
   if (isExistSemester) {

@@ -73,7 +73,7 @@ const createStudentValidationSchema = z.object({
       .describe("Password is required"),
     student: z.object({
       name: studentNameSchema.describe("Student name is required"),
-      gender: z.enum(["Male", "Female"]).describe("Gender is required"),
+      gender: z.enum(["male", "female"]).describe("Gender is required"),
       religion: z
         .enum(["Islam", "Hindu", "Christian", "Buddhist", "Others"])
         .describe("Religion is required"),

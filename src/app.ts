@@ -14,9 +14,11 @@ app.use(cors());
 // application routes
 app.use("/api/v1", router);
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("The university server is running!");
-});
+const test = async (req: Request, res: Response) => {
+  res.sendStatus(200);
+};
+
+app.use("/", test);
 
 // Route not found handler
 app.use("*", RouteError);

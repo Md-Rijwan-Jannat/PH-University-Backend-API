@@ -33,20 +33,20 @@ export const academicDepartmentSchema = new Schema<
 );
 
 // Department can't be a duplicate
-// academicDepartmentSchema.pre("save", async function (next) {
-//   const isExistDepartment = await AcademicDepartment.findOne({
-//     name: this.name,
-//   });
+academicDepartmentSchema.pre("save", async function (next) {
+  const isExistDepartment = await AcademicDepartment.findOne({
+    name: this.name,
+  });
 
-//   if (isExistDepartment) {
-//     throw new AppError(
-//       httpStatus.NOT_FOUND,
-//       "This department is already exists!",
-//     );
-//   }
+  if (isExistDepartment) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This department is already exists!",
+    );
+  }
 
-//   next();
-// });
+  next();
+});
 
 //  Unknown _id validation error
 academicDepartmentSchema.pre("find", async function (next) {

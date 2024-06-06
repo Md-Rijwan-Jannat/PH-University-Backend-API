@@ -5,7 +5,7 @@ import { studentValidations } from "./student.validation";
 
 const router = express.Router();
 
-router.get("/", StudentControllers.grtAllStudents);
+router.get("/", StudentControllers.getAllStudents);
 
 router.get("/:studentId", StudentControllers.getSingleStudent);
 

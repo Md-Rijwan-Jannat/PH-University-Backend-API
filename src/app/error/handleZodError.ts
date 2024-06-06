@@ -4,8 +4,8 @@ import { TErrorSources } from "../interface/error";
 const handleZodError = (err: ZodError) => {
   const errorSources: TErrorSources = err.issues.map((issue: ZodIssue) => {
     return {
-      path: issue.path[issue.path.length - 1],
-      message: issue.message,
+      path: issue?.path[issue?.path?.length - 1],
+      message: issue?.message,
     };
   });
   const statusCode = 404;
