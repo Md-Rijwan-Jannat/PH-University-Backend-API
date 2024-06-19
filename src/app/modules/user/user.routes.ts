@@ -1,26 +1,30 @@
 import { Router } from "express";
 import { UserController } from "./user.controller";
 import { studentValidations } from "../student/student.validation";
-import { Validation } from "../../middlewares/dataValidation";
+import { ValidationRequest } from "../../middlewares/ValidationRequest";
 import { facultyValidations } from "../faculty/faculty.validation";
 import { adminValidations } from "../admin/admin.validation";
+import { Auth } from "../../middlewares/Auth";
+import { USER_ROLE } from "./user.constants";
 
 const router = Router();
 
 router.post(
   "/create-student",
-  Validation(studentValidations.createStudentValidationSchema),
+  // Auth(USER_ROLE.admin),
+  ValidationRequest(studentValidations.createStudentValidationSchema),
   UserController.createStudent,
 );
 
 router.post(
-  "/create-faulty",
-  Validation(facultyValidations.createFacultyValidationSchema),
+  "/create-faculty",
+  ValidationRequest(facultyValidations.createFacultyValidationSchema),
   UserController.createFaculty,
 );
+
 router.post(
   "/create-admin",
-  Validation(adminValidations.createAdminValidationSchema),
+  ValidationRequest(adminValidations.createAdminValidationSchema),
   UserController.createAdmin,
 );
 

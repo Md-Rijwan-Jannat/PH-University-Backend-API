@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import { IAdmin, IAdminModel, IAdminName } from "./admin.interface";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import httpStatus from "http-status";
 
 // admin name schema

@@ -1,6 +1,6 @@
 import { AcademicDepartmentValidation } from "./academicDepartment.validation";
 import { AcademicDepartmentControllers } from "./academicDepartment.controller";
-import { Validation as RequestValidation } from "../../middlewares/dataValidation";
+import { ValidationRequest as RequestValidation } from "../../middlewares/ValidationRequest";
 import { Router } from "express";
 
 const router = Router();

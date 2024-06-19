@@ -1,17 +1,18 @@
 import express from "express";
-import { Validation } from "../../middlewares/dataValidation";
+import { ValidationRequest } from "../../middlewares/ValidationRequest";
 import { facultyValidations } from "./faculty.validation";
 import { FacultyControllers } from "./faculty.controller";
+import { Auth } from "../../middlewares/Auth";
 
 const router = express.Router();
 
-router.get("/", FacultyControllers.grtAllFaculties);
+router.get("/", Auth(), FacultyControllers.grtAllFaculties);
 
 router.get("/:facultyId", FacultyControllers.getSingleFaculty);
 
 router.patch(
   "/:facultyId",
-  Validation(facultyValidations.updateFacultyValidationSchema),
+  ValidationRequest(facultyValidations.updateFacultyValidationSchema),
   FacultyControllers.updateSingleFaculty,
 );
 

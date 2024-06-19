@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { IAdmin } from "./admin.interface";
 import { Admin } from "./admin.model";
 import { User } from "../user/user.model";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import httpStatus from "http-status";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { searchingFields } from "./admin.constant";

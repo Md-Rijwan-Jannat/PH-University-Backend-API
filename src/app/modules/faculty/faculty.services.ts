@@ -2,13 +2,23 @@ import mongoose from "mongoose";
 import { IFaculty } from "./faculty.interface";
 import { Faculty } from "./faculty.model";
 import { User } from "../user/user.model";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import httpStatus from "http-status";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { searchingFields } from "./faculty.constants";
 
 const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
-  const filterQuery = new QueryBuilder(Faculty.find(), query)
+  const filterQuery = new QueryBuilder(
+    Faculty.find()
+      .populate({
+        path: "academicDepartment",
+        populate: {
+          path: "academicFaculty",
+        },
+      })
+      .populate("academicFaculty"),
+    query,
+  )
     .search(searchingFields)
     .filter()
     .sort()
@@ -22,7 +32,14 @@ const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
 
 // Get single faculty service
 const getSingleFacultyFromDB = async (id: string) => {
-  const result = await Faculty.findOne({ id });
+  const result = await Faculty.findOne({ id })
+    .populate({
+      path: "academicDepartment",
+      populate: {
+        path: "academicFaculty",
+      },
+    })
+    .populate("academicFaculty");
   return result;
 };
 
@@ -49,7 +66,15 @@ const updateSingleFacultyFromDB = async (
       new: true,
       runValidators: true,
     },
-  );
+  )
+    .populate({
+      path: "academicDepartment",
+      populate: {
+        path: "academicFaculty",
+      },
+    })
+    .populate("academicFaculty");
+
   return result;
 };
 

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { IStudent } from "./student.interface";
 import { Student } from "./student.model";
 import { User } from "../user/user.model";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import httpStatus from "http-status";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { studentSearchableFields } from "./student.constants";
@@ -10,6 +10,7 @@ import { studentSearchableFields } from "./student.constants";
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   const studentQuery = new QueryBuilder(
     Student.find()
+      .populate("user")
       .populate("admissionSemester")
       .populate({
         path: "academicDepartment",

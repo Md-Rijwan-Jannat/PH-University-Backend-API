@@ -1,11 +1,11 @@
 import { Schema, model } from "mongoose";
-import { IUser } from "./user.interface";
+import { IUser, UserModel } from "./user.interface";
 import config from "../../config";
 import bcrypt from "bcrypt";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import httpStatus from "http-status";
 
-export const userSchema = new Schema<IUser>(
+export const userSchema = new Schema<IUser, UserModel>(
   {
     id: {
       type: String,
@@ -16,10 +16,14 @@ export const userSchema = new Schema<IUser>(
     password: {
       type: String,
       trim: true,
+      select: 0,
     },
     needsChangePassword: {
       type: Boolean,
       default: true,
+    },
+    passwordCreatedAt: {
+      type: Date,
     },
     role: {
       type: String,
@@ -74,4 +78,39 @@ userSchema.post("save", function (doc, next) {
   next();
 });
 
-export const User = model<IUser>("User", userSchema);
+// is user is existing!
+userSchema.statics.isUserExistingByCustomId = async function (id: string) {
+  return await User.findOne({ id }).select("+password");
+};
+
+// is user is deleted!
+userSchema.statics.isUserDeleted = async function (id: string) {
+  const user = await User.findOne({ id }).select("isDeleted");
+  return user ? user.isDeleted : false;
+};
+
+//  is user is blocked!
+userSchema.statics.isUserBlocked = async function (id: string) {
+  const user = await User.findOne({ id }).select("status");
+  return user ? user.status === "blocked" : false;
+};
+
+// is user password match!
+userSchema.statics.isPasswordMatch = async function (
+  resentLoginPassword: string,
+  hashPassword: string,
+) {
+  return await bcrypt.compare(resentLoginPassword, hashPassword);
+};
+
+// is jwt token not valid after change password
+userSchema.statics.isJwtIssuedBeforePasswordChange = async function (
+  passwordCreateTimestamp: number,
+  jwtIssuedTimestamp: number,
+) {
+  console.log(passwordCreateTimestamp, jwtIssuedTimestamp);
+
+  return passwordCreateTimestamp > jwtIssuedTimestamp;
+};
+
+export const User = model<IUser, UserModel>("User", userSchema);

@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import {
   IAcademicFaculty,
   IAcademicFacultyModel,

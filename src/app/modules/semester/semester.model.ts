@@ -8,7 +8,7 @@ import {
   TSemesterName,
 } from "./semester.interface";
 import { SemesterDetails } from "./semester.constants";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import httpStatus from "http-status";
 
 export const months: readonly TMonths[] = SemesterDetails.Months;

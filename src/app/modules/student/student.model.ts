@@ -6,7 +6,7 @@ import {
   IStudentModel,
   IStudentName,
 } from "./student.interface";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import httpStatus from "http-status";
 
 // student name schema
@@ -202,15 +202,15 @@ studentSchema.pre("save", async function (next) {
   next();
 });
 
-// Unknown _id validation error
-studentSchema.pre("find", async function (next) {
-  const query = this.getQuery();
-  const isExistStudent = await Student.findOne(query);
-  if (!isExistStudent) {
-    throw new AppError(httpStatus.NOT_FOUND, "This student doesn't exist!");
-  }
-  next();
-});
+// // Unknown _id validation error
+// studentSchema.pre("find", async function (next) {
+//   const query = this.getQuery();
+//   const isExistStudent = await Student.findOne(query);
+//   if (!isExistStudent) {
+//     throw new AppError(httpStatus.NOT_FOUND, "This student doesn't exist!");
+//   }
+//   next();
+// });
 
 // Unknown _id validation error for update
 studentSchema.pre("findOneAndUpdate", async function (next) {

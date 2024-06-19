@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import { SemesterDetails } from "./semester.constants";
 import { ISemester } from "./semester.interface";
 import { Semester } from "./semester.model";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 
 // Semester create service
 const createSemesterIntoDB = async (payload: ISemester) => {

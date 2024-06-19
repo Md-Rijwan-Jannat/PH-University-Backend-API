@@ -11,7 +11,7 @@ import { IStudent } from "../student/student.interface";
 import { Student } from "../student/student.model";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import { IFaculty } from "../faculty/faculty.interface";
 import { AcademicDepartment } from "../academicDepartment/academicDepartment.model";
 import { Faculty } from "../faculty/faculty.model";
@@ -25,7 +25,7 @@ const createStudentIntoDB = async (password: string, payload: IStudent) => {
 
   const admissionSemester = await Semester.findById(payload.admissionSemester);
   if (!admissionSemester) {
-    throw new AppError(400, "Admission semester not found");
+    throw new AppError(httpStatus.BAD_REQUEST, "Admission semester not found");
   }
 
   const session = await mongoose.startSession();
@@ -57,7 +57,7 @@ const createStudentIntoDB = async (password: string, payload: IStudent) => {
 const createFacultyIntoDB = async (password: string, payload: IFaculty) => {
   // Validate payload at the start
   if (!payload) {
-    throw new AppError(400, "Payload is required");
+    throw new AppError(httpStatus.BAD_REQUEST, "Payload is required");
   }
 
   const userData: Partial<IUser> = {};
@@ -68,7 +68,10 @@ const createFacultyIntoDB = async (password: string, payload: IFaculty) => {
 
   if (!payload.academicDepartment) {
     console.error("academicDepartment is missing from payload");
-    throw new AppError(400, "Academic department is required");
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Academic department is required",
+    );
   }
 
   const academicDepartment = await AcademicDepartment.findById(
@@ -78,7 +81,7 @@ const createFacultyIntoDB = async (password: string, payload: IFaculty) => {
     console.error(
       `Academic department not found for ID: ${payload.academicDepartment}`,
     );
-    throw new AppError(400, "Academic department not found");
+    throw new AppError(httpStatus.BAD_REQUEST, "Academic department not found");
   }
 
   const session = await mongoose.startSession();

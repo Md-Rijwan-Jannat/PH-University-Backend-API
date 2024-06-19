@@ -8,6 +8,8 @@ import { Faculty } from "./faculty.model";
 const grtAllFaculties = catchAsync(async (req, res) => {
   const query = req.query;
 
+  console.log("This is decode:", req.user);
+
   const result = await FacultyServices.getAllFacultyFromDB(query);
 
   sendResponse(res, {

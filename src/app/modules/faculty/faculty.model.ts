@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import { IFaculty, IFacultyModel, IFacultyName } from "./faculty.interface";
-import { AppError } from "../../middlewares/appError";
+import { AppError } from "../../middlewares/AppError";
 import httpStatus from "http-status";
 
 // faculty name schema
@@ -123,16 +123,6 @@ facultySchema.pre("save", async function (next) {
   const isExistFaculty = await Faculty.findOne({ id: this.id });
   if (isExistFaculty) {
     throw new AppError(httpStatus.NOT_FOUND, "This faculty already exists!");
-  }
-  next();
-});
-
-//  Unknown _id validation error
-facultySchema.pre("find", async function (next) {
-  const query = this.getQuery();
-  const isExistFaculty = await Faculty.findOne(query);
-  if (!isExistFaculty) {
-    throw new AppError(httpStatus.NOT_FOUND, "This faculty doesn't exist!");
   }
   next();
 });
