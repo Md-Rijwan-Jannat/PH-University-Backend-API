@@ -2,7 +2,7 @@
 
 This is a Node.js application built with Express.js, MongoDB (using Mongoose), and TypeScript.
 
-![Mongoose Model Diagram](https://i.ibb.co/D7Kpf4W/Screenshot-2024-06-15-163923.png)
+![Mongoose Model Diagram](https://i.ibb.co/BspVS2p/Screenshot-2024-06-19-104207.png)
 
 <h1 align="center">
   PH University management diagram 🚀
@@ -26,7 +26,7 @@ The PH University Management System is designed to streamline the process of man
 
 ## Live URL
 
-You can access the live version of the application [here](https://car-wash-booking-service.vercel.app).
+You can access the live version of the application [here](https://ph-university-management.vercel.app/).
 
 ## Projects model
 
