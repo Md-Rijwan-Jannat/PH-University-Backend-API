@@ -4,24 +4,28 @@ import { studentValidations } from "../student/student.validation";
 import { ValidationRequest } from "../../middlewares/ValidationRequest";
 import { facultyValidations } from "../faculty/faculty.validation";
 import { adminValidations } from "../admin/admin.validation";
+import { USER_ROLE } from "./user.constants";
+import { Auth } from "../../middlewares/Auth";
 
 const router = Router();
 
 router.post(
   "/create-student",
-  // Auth(USER_ROLE.admin),
+  Auth(USER_ROLE.admin),
   ValidationRequest(studentValidations.createStudentValidationSchema),
   UserController.createStudent,
 );
 
 router.post(
   "/create-faculty",
+  Auth(USER_ROLE.admin),
   ValidationRequest(facultyValidations.createFacultyValidationSchema),
   UserController.createFaculty,
 );
 
 router.post(
   "/create-admin",
+  // Auth(USER_ROLE.admin),
   ValidationRequest(adminValidations.createAdminValidationSchema),
   UserController.createAdmin,
 );

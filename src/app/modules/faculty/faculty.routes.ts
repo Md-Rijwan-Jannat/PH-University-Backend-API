@@ -3,19 +3,33 @@ import { ValidationRequest } from "../../middlewares/ValidationRequest";
 import { facultyValidations } from "./faculty.validation";
 import { FacultyControllers } from "./faculty.controller";
 import { Auth } from "../../middlewares/Auth";
+import { USER_ROLE } from "../user/user.constants";
 
 const router = express.Router();
 
-router.get("/", Auth(), FacultyControllers.grtAllFaculties);
+router.get(
+  "/",
+  Auth(USER_ROLE.admin, USER_ROLE.faculty),
+  FacultyControllers.grtAllFaculties,
+);
 
-router.get("/:facultyId", FacultyControllers.getSingleFaculty);
+router.get(
+  "/:facultyId",
+  Auth(USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
+  FacultyControllers.getSingleFaculty,
+);
 
 router.patch(
   "/:facultyId",
+  Auth(USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
   ValidationRequest(facultyValidations.updateFacultyValidationSchema),
   FacultyControllers.updateSingleFaculty,
 );
 
-router.delete("/:facultyId", FacultyControllers.deleteFaculty);
+router.delete(
+  "/:facultyId",
+  Auth(USER_ROLE.admin),
+  FacultyControllers.deleteFaculty,
+);
 
 export const FacultyRoutes = router;
