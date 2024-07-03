@@ -23,7 +23,7 @@ main();
 
 // unHandle rejection error handle
 process.on("unhandledRejection", () => {
-  console.log("unhandledRejection is detected! Server is closing .... 😈");
+  console.log("unhandledRejection is detected! Server is closed now! .... 😈");
 
   if (server) {
     server.close(() => {
@@ -35,6 +35,6 @@ process.on("unhandledRejection", () => {
 
 // uncaught exception error handler
 process.on("uncaughtException", () => {
-  console.log("uncaughtException is detected! Server is closing .... 😈");
+  console.log("uncaughtException is detected! Server is closed now! .... 😈");
   process.exit(1);
 });

@@ -45,8 +45,20 @@ const refreshToken = catchAsync(async (req, res) => {
   });
 });
 
+const forgetPassword = catchAsync(async (req, res) => {
+  const userId = req.body.id;
+  const result = await AuthService.forgetPasswordIntoDB(userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "The link create successfully!",
+    data: result,
+  });
+});
+
 export const AuthController = {
   authLogin,
   changePassword,
   refreshToken,
+  forgetPassword,
 };

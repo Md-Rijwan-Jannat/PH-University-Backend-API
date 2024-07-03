@@ -6,6 +6,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
 import bcrypt from "bcrypt";
 import { createJwtToken } from "./auth.utils";
+import { SendEmail } from "../../utils/sendEmail";
 
 const authLogin = async (payload: IAuthLogin) => {
   const user = await User.isUserExistingByCustomId(payload.id);
@@ -140,8 +141,42 @@ const refreshToken = async (token: string) => {
 
   return { accessToken };
 };
+
+const forgetPasswordIntoDB = async (userId: string) => {
+  const user = await User.findOne({ id: userId });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
+  }
+
+  if (await User.isUserDeleted(user.id)) {
+    throw new AppError(httpStatus.FORBIDDEN, "This user is deleted!");
+  }
+
+  if (await User.isUserBlocked(user.id)) {
+    throw new AppError(httpStatus.FORBIDDEN, "This user is blocked!");
+  }
+
+  const jwtPayload = {
+    userId: user.id,
+    role: user.role,
+  };
+
+  const accessToken = createJwtToken(
+    jwtPayload,
+    config.jwt_access_token as string,
+    "10m",
+  );
+
+  const forgetLink = `http://localhost:3000?id=${user.id}&token= ${accessToken}`;
+  console.log(forgetLink);
+
+  SendEmail();
+};
+
 export const AuthService = {
   authLogin,
   changePasswordIntoDB,
   refreshToken,
+  forgetPasswordIntoDB,
 };

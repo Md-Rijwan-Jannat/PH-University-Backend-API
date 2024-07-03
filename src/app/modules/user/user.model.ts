@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from "mongoose";
 import { IUser, UserModel } from "./user.interface";
 import config from "../../config";
@@ -8,6 +9,12 @@ import httpStatus from "http-status";
 export const userSchema = new Schema<IUser, UserModel>(
   {
     id: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
+    email: {
       type: String,
       required: true,
       trim: true,

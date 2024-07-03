@@ -4,8 +4,6 @@ import { studentValidations } from "../student/student.validation";
 import { ValidationRequest } from "../../middlewares/ValidationRequest";
 import { facultyValidations } from "../faculty/faculty.validation";
 import { adminValidations } from "../admin/admin.validation";
-import { Auth } from "../../middlewares/Auth";
-import { USER_ROLE } from "./user.constants";
 
 const router = Router();
 

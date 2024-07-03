@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import config from "../../config";
 import httpStatus from "http-status";
 import mongoose from "mongoose";
@@ -21,7 +22,9 @@ import { Admin } from "../admin/admin.model";
 const createStudentIntoDB = async (password: string, payload: IStudent) => {
   const userData: Partial<IUser> = {};
   userData.password = password || (config.default_password as string);
+
   userData.role = "student";
+  userData.email = payload.email;
 
   const admissionSemester = await Semester.findById(payload.admissionSemester);
   if (!admissionSemester) {
@@ -63,6 +66,7 @@ const createFacultyIntoDB = async (password: string, payload: IFaculty) => {
   const userData: Partial<IUser> = {};
   userData.password = password || (config.default_password as string);
   userData.role = "faculty";
+  userData.email = payload.email;
 
   console.log("Received payload:", JSON.stringify(payload, null, 2));
 
@@ -124,6 +128,7 @@ const createAdminIntoDB = async (password: string, payload: IAdmin) => {
   const userData: Partial<IUser> = {};
   userData.password = password || (config.default_password as string);
   userData.role = "admin";
+  userData.email = payload.email;
 
   const session = await mongoose.startSession();
   try {
