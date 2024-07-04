@@ -6,7 +6,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
 import bcrypt from "bcrypt";
 import { createJwtToken } from "./auth.utils";
-import { SendEmail } from "../../utils/sendEmail";
+import { sEndEmail } from "../../utils/sendEmail";
 
 const authLogin = async (payload: IAuthLogin) => {
   const user = await User.isUserExistingByCustomId(payload.id);
@@ -162,16 +162,65 @@ const forgetPasswordIntoDB = async (userId: string) => {
     role: user.role,
   };
 
-  const accessToken = createJwtToken(
+  const resetToken = createJwtToken(
     jwtPayload,
     config.jwt_access_token as string,
     "10m",
   );
 
-  const forgetLink = `http://localhost:3000?id=${user.id}&token= ${accessToken}`;
-  console.log(forgetLink);
+  const resetLink = `${config.reset_link_url}?id=${user.id}&token=${resetToken}`;
 
-  SendEmail();
+  sEndEmail(user.email, resetLink);
+  console.log(resetLink);
+};
+
+const resetPasswordIntoDB = async (
+  payload: { id: string; newPassword: string },
+  token: string,
+) => {
+  const user = await User.findOne({ id: payload.id });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
+  }
+
+  if (await User.isUserDeleted(user.id)) {
+    throw new AppError(httpStatus.FORBIDDEN, "This user is deleted!");
+  }
+
+  if (await User.isUserBlocked(user.id)) {
+    throw new AppError(httpStatus.FORBIDDEN, "This user is blocked!");
+  }
+
+  // check if token is valid
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_token as string,
+  ) as JwtPayload;
+
+  if (payload.id !== decoded.userId) {
+    throw new AppError(httpStatus.FORBIDDEN, "This user is forbidden!");
+  }
+
+  const newHashPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.password_salt_rounds),
+  );
+
+  const result = await User.findOneAndUpdate(
+    {
+      id: decoded.userId,
+      role: decoded.role,
+    },
+    {
+      password: newHashPassword,
+      needsChangePassword: false,
+      passwordCreatedAt: new Date(),
+    },
+    { new: true },
+  );
+
+  return result;
 };
 
 export const AuthService = {
@@ -179,4 +228,5 @@ export const AuthService = {
   changePasswordIntoDB,
   refreshToken,
   forgetPasswordIntoDB,
+  resetPasswordIntoDB,
 };

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const userValidationSchema = z
+const passwordValidationSchema = z
   .string({ invalid_type_error: "Password must be string" })
   .min(8)
   .regex(
@@ -14,7 +14,7 @@ const authValidationSchema = z.object({
       required_error: "This ID is required",
       invalid_type_error: "This ID must be a string",
     }),
-    password: userValidationSchema,
+    password: passwordValidationSchema,
   }),
 });
 
@@ -24,7 +24,7 @@ const changeValidationSchema = z.object({
       required_error: "Previous password is required",
       invalid_type_error: "Previous password must be a string",
     }),
-    newPassword: userValidationSchema,
+    newPassword: passwordValidationSchema,
   }),
 });
 
@@ -45,9 +45,17 @@ const forgetPasswordValidationSchema = z.object({
   }),
 });
 
+const resetPasswordValidationSchema = z.object({
+  body: z.object({
+    id: z.string({ required_error: "User id is required" }),
+    newPassword: passwordValidationSchema,
+  }),
+});
+
 export const AuthValidation = {
   authValidationSchema,
   changeValidationSchema,
   refreshTokenValidationSchema,
   forgetPasswordValidationSchema,
+  resetPasswordValidationSchema,
 };

@@ -13,6 +13,7 @@ const config = {
   jwt_refresh_token: process.env.JWT_REFRESH_TOKEN,
   jwt_access_expire_in: process.env.JWT_ACCESS_EXPIRE_IN,
   jwt_refresh_expire_in: process.env.JWT_REFRESH_EXPIRE_IN,
+  reset_link_url: process.env.RESET_LINK_URL,
 };
 
 export default config;
