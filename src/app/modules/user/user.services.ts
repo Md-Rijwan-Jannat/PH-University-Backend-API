@@ -12,12 +12,12 @@ import { IStudent } from "../student/student.interface";
 import { Student } from "../student/student.model";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
-import { AppError } from "../../middlewares/AppError";
 import { IFaculty } from "../faculty/faculty.interface";
 import { AcademicDepartment } from "../academicDepartment/academicDepartment.model";
 import { Faculty } from "../faculty/faculty.model";
 import { IAdmin } from "../admin/admin.interface";
 import { Admin } from "../admin/admin.model";
+import { AppError } from "../../middlewares/AppError";
 
 const createStudentIntoDB = async (password: string, payload: IStudent) => {
   const userData: Partial<IUser> = {};

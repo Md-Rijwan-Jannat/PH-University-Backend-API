@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+ 
 import { Model, Types } from "mongoose";
 
 export interface ISemesterRegistration {

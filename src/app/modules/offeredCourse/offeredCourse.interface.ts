@@ -21,8 +21,8 @@ export interface IOfferedCourse {
   academicDepartment: Types.ObjectId;
   course: Types.ObjectId;
   faculty: Types.ObjectId;
-  maxCapacity: Number;
-  session: Number;
+  maxCapacity: number;
+  session: number;
   days: TDays[];
   startTime: string;
   endTime: string;

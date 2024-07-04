@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { IOfferedCourse, TDays } from "./offeredCourse.interface";
+import { IOfferedCourse } from "./offeredCourse.interface";
 import { Days } from "./offeredCourse.constants";
 
 const offeredCourseSchema = new Schema<IOfferedCourse>(

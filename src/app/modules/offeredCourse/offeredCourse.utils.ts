@@ -1,4 +1,4 @@
-import { TDays, TSchedule } from "./offeredCourse.interface";
+import { TSchedule } from "./offeredCourse.interface";
 
 export const HashScheduleConflict = (
   assignedSchedule: TSchedule[],
