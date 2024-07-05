@@ -12,6 +12,17 @@ export interface IUser {
   isDeleted: boolean;
 }
 
+export interface IUploadedFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  destination: string;
+  filename: string;
+  path: string;
+  size: number;
+}
+
 export interface UserModel extends Model<IUser> {
   isUserExistingByCustomId(id: string): Promise<IUser | null>;
   isPasswordMatch(

@@ -5,6 +5,7 @@ import config from "../../config";
 import bcrypt from "bcrypt";
 import { AppError } from "../../middlewares/AppError";
 import httpStatus from "http-status";
+import { userStatus } from "./user.constants";
 
 export const userSchema = new Schema<IUser, UserModel>(
   {
@@ -39,7 +40,7 @@ export const userSchema = new Schema<IUser, UserModel>(
     },
     status: {
       type: String,
-      enum: ["in-progress", "blocked"],
+      enum: userStatus,
       default: "in-progress",
     },
     isDeleted: {

@@ -121,12 +121,24 @@ const createOfferedCourseIntoDB = async (payload: IOfferedCourse) => {
 };
 
 const getAllOfferedCourseFromDB = async () => {
-  const result = await OfferedCourse.find();
+  const result = await OfferedCourse.find()
+    .populate("semesterRegistration")
+    .populate("academicSemester")
+    .populate("academicFaculty")
+    .populate("academicDepartment")
+    .populate("course")
+    .populate("faculty");
   return result;
 };
 
 const getSingleOfferedCourseFromDB = async (id: string) => {
-  const result = await OfferedCourse.findById(id);
+  const result = await OfferedCourse.findById(id)
+    .populate("semesterRegistration")
+    .populate("academicSemester")
+    .populate("academicFaculty")
+    .populate("academicDepartment")
+    .populate("course")
+    .populate("faculty");
   return result;
 };
 

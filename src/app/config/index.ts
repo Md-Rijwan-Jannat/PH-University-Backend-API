@@ -14,6 +14,9 @@ const config = {
   jwt_access_expire_in: process.env.JWT_ACCESS_EXPIRE_IN,
   jwt_refresh_expire_in: process.env.JWT_REFRESH_EXPIRE_IN,
   reset_link_url: process.env.RESET_LINK_URL,
+  cloud_name: process.env.CLOUD_NAME,
+  cloud_api_key: process.env.CLOUD_API_KEY,
+  cloud_api_secret: process.env.CLOUD_API_SECRET,
 };
 
 export default config;

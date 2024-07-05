@@ -10,7 +10,7 @@ import {
 import { Semester } from "../semester/semester.model";
 import { IStudent } from "../student/student.interface";
 import { Student } from "../student/student.model";
-import { IUser } from "./user.interface";
+import { IUploadedFile, IUser } from "./user.interface";
 import { User } from "./user.model";
 import { IFaculty } from "../faculty/faculty.interface";
 import { AcademicDepartment } from "../academicDepartment/academicDepartment.model";
@@ -18,8 +18,13 @@ import { Faculty } from "../faculty/faculty.model";
 import { IAdmin } from "../admin/admin.interface";
 import { Admin } from "../admin/admin.model";
 import { AppError } from "../../middlewares/AppError";
+import { sendImageTOCloudinary } from "../../utils/sendImageToCloudinary";
 
-const createStudentIntoDB = async (password: string, payload: IStudent) => {
+const createStudentIntoDB = async (
+  file: IUploadedFile,
+  password: string,
+  payload: IStudent,
+) => {
   const userData: Partial<IUser> = {};
   userData.password = password || (config.default_password as string);
 
@@ -34,13 +39,23 @@ const createStudentIntoDB = async (password: string, payload: IStudent) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
+
     userData.id = await generateStudentId(admissionSemester);
     const newUser = await User.create([userData], { session });
+
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
     }
+
+    const imageName = `${userData.id} ${payload.name.firstName}`;
+
+    // image upload to cloudinary
+    const imageHostingData = await sendImageTOCloudinary(file.path, imageName);
+    const { secure_url }: any = imageHostingData;
+
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
+    payload.profileImage = secure_url;
 
     const newStudent = await Student.create([payload], { session });
     if (!newStudent.length) {
@@ -57,7 +72,11 @@ const createStudentIntoDB = async (password: string, payload: IStudent) => {
   }
 };
 
-const createFacultyIntoDB = async (password: string, payload: IFaculty) => {
+const createFacultyIntoDB = async (
+  file: IUploadedFile,
+  password: string,
+  payload: IFaculty,
+) => {
   // Validate payload at the start
   if (!payload) {
     throw new AppError(httpStatus.BAD_REQUEST, "Payload is required");
@@ -104,9 +123,15 @@ const createFacultyIntoDB = async (password: string, payload: IFaculty) => {
         "Payload became undefined after user creation",
       );
     }
+    const imageName = `${userData.id} ${payload.name.firstName}`;
+
+    // image upload to cloudinary
+    const imageHostingData = await sendImageTOCloudinary(file.path, imageName);
+    const { secure_url }: any = imageHostingData;
 
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
+    payload.profileImage = secure_url;
 
     const newFaculty = await Faculty.create([payload], { session });
     if (!newFaculty.length) {
@@ -124,7 +149,11 @@ const createFacultyIntoDB = async (password: string, payload: IFaculty) => {
   }
 };
 
-const createAdminIntoDB = async (password: string, payload: IAdmin) => {
+const createAdminIntoDB = async (
+  file: IUploadedFile,
+  password: string,
+  payload: IAdmin,
+) => {
   const userData: Partial<IUser> = {};
   userData.password = password || (config.default_password as string);
   userData.role = "admin";
@@ -138,8 +167,16 @@ const createAdminIntoDB = async (password: string, payload: IAdmin) => {
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create admin");
     }
+
+    const imageName = `${userData.id} ${payload.name.firstName}`;
+
+    // image upload to cloudinary
+    const imageHostingData = await sendImageTOCloudinary(file.path, imageName);
+    const { secure_url }: any = imageHostingData;
+
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
+    payload.profileImage = secure_url;
 
     const newAdmin = await Admin.create([payload], { session });
     if (!newAdmin.length) {
@@ -156,8 +193,36 @@ const createAdminIntoDB = async (password: string, payload: IAdmin) => {
   }
 };
 
+const getMe = (userId: string, role: string) => {
+  let result = null;
+
+  if (role === "student") {
+    result = Student.findOne({ id: userId });
+  }
+
+  if (role === "faculty") {
+    result = Faculty.findOne({ id: userId });
+  }
+
+  if (role === "admin") {
+    result = Admin.findOne({ id: userId });
+  }
+
+  return result;
+};
+
+const userStatusChangeIntoDB = async (
+  payload: { status: string },
+  id: string,
+) => {
+  const result = await User.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
+  getMe,
+  userStatusChangeIntoDB,
 };

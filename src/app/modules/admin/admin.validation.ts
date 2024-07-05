@@ -45,7 +45,8 @@ const createAdminValidationSchema = z.object({
         "Password must contain at least one letter, one number, and one special character",
       )
       .trim()
-      .describe("Password is required"),
+      .describe("Password is required")
+      .optional(),
     admin: z.object({
       name: adminNameSchema.describe("Admin name is required"),
       gender: z.enum(["male", "Female"]).describe("Gender is required"),

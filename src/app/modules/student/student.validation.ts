@@ -70,7 +70,8 @@ const createStudentValidationSchema = z.object({
         "Password must contain at least one letter, one number, and one special character",
       )
       .trim()
-      .describe("Password is required"),
+      .describe("Password is required")
+      .optional(),
     student: z.object({
       name: studentNameSchema.describe("Student name is required"),
       gender: z.enum(["male", "female"]).describe("Gender is required"),
