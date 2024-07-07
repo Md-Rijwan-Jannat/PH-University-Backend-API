@@ -10,7 +10,6 @@ import {
 import { Semester } from "../semester/semester.model";
 import { IStudent } from "../student/student.interface";
 import { Student } from "../student/student.model";
-import { IUploadedFile, IUser } from "./user.interface";
 import { User } from "./user.model";
 import { IFaculty } from "../faculty/faculty.interface";
 import { AcademicDepartment } from "../academicDepartment/academicDepartment.model";
@@ -18,10 +17,11 @@ import { Faculty } from "../faculty/faculty.model";
 import { IAdmin } from "../admin/admin.interface";
 import { Admin } from "../admin/admin.model";
 import { AppError } from "../../middlewares/AppError";
+import { IUser } from "./user.interface";
 import { sendImageTOCloudinary } from "../../utils/sendImageToCloudinary";
 
 const createStudentIntoDB = async (
-  file: IUploadedFile,
+  file: any,
   password: string,
   payload: IStudent,
 ) => {
@@ -48,9 +48,11 @@ const createStudentIntoDB = async (
     }
 
     const imageName = `${userData.id} ${payload.name.firstName}`;
+    const path = file?.path;
+    console.log(file);
 
     // image upload to cloudinary
-    const imageHostingData = await sendImageTOCloudinary(file.path, imageName);
+    const imageHostingData = await sendImageTOCloudinary(imageName, path);
     const { secure_url }: any = imageHostingData;
 
     payload.id = newUser[0].id;
@@ -73,7 +75,7 @@ const createStudentIntoDB = async (
 };
 
 const createFacultyIntoDB = async (
-  file: IUploadedFile,
+  file: Express.Multer.File,
   password: string,
   payload: IFaculty,
 ) => {
@@ -116,17 +118,11 @@ const createFacultyIntoDB = async (
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
     }
 
-    // Ensure payload is still valid after user creation
-    if (!payload) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Payload became undefined after user creation",
-      );
-    }
     const imageName = `${userData.id} ${payload.name.firstName}`;
+    const path = file?.path;
 
     // image upload to cloudinary
-    const imageHostingData = await sendImageTOCloudinary(file.path, imageName);
+    const imageHostingData = await sendImageTOCloudinary(imageName, path);
     const { secure_url }: any = imageHostingData;
 
     payload.id = newUser[0].id;
@@ -150,7 +146,7 @@ const createFacultyIntoDB = async (
 };
 
 const createAdminIntoDB = async (
-  file: IUploadedFile,
+  file: Express.Multer.File,
   password: string,
   payload: IAdmin,
 ) => {
@@ -169,9 +165,10 @@ const createAdminIntoDB = async (
     }
 
     const imageName = `${userData.id} ${payload.name.firstName}`;
+    const path = file?.path;
 
     // image upload to cloudinary
-    const imageHostingData = await sendImageTOCloudinary(file.path, imageName);
+    const imageHostingData = await sendImageTOCloudinary(imageName, path);
     const { secure_url }: any = imageHostingData;
 
     payload.id = newUser[0].id;

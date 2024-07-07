@@ -3,64 +3,101 @@ import { grade } from "./enrolledCourse.constants";
 import { IEnrolledCourse } from "./enrolledCourse.interface";
 
 const courseMarksSchema = new Schema({
-  classTest1: { type: Number },
-  midTerm: { type: Number },
-  classTest2: { type: Number },
-  finalTerm: { type: Number },
+  classTest1: {
+    type: Number,
+    min: 0,
+    max: 20,
+    default: 0,
+  },
+  midTerm: {
+    type: Number,
+    min: 0,
+    max: 60,
+    default: 0,
+  },
+  classTest2: {
+    type: Number,
+    min: 0,
+    max: 40,
+    default: 0,
+  },
+  finalTerm: {
+    type: Number,
+    min: 0,
+    max: 90,
+    default: 0,
+  },
 });
 
 const enrolledCourseSchema = new Schema(
   {
     semesterRegistration: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
+      required: [true, "Semester registration id is required"],
+      trim: true,
       ref: "SemesterRegistration",
-      required: true,
     },
     academicSemester: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AcademicSemester",
-      required: true,
-    },
-    academicFaculty: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AcademicFaculty",
-      required: true,
+      type: Schema.Types.ObjectId,
+      required: [true, "Academic semester id is required"],
+      trim: true,
+      ref: "Semester",
     },
     academicDepartment: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
+      required: [true, "Academic department id is required"],
+      trim: true,
       ref: "AcademicDepartment",
-      required: true,
+    },
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      required: [true, "Academic faculty id is required"],
+      trim: true,
+      ref: "AcademicFaculty",
+    },
+    offeredCourse: {
+      type: Schema.Types.ObjectId,
+      required: [true, "Offered course id is required"],
+      trim: true,
+      ref: "OfferedCourse",
     },
     course: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
+      required: [true, "course id is required"],
+      trim: true,
       ref: "Course",
-      required: true,
     },
     faculty: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
+      required: [true, "Faculty id is required"],
+      trim: true,
       ref: "Faculty",
-      required: true,
     },
     student: {
       type: mongoose.Schema.Types.ObjectId,
+      required: [true, "Student id is required"],
       ref: "Student",
-      required: true,
     },
     isEnrolled: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     isComplete: {
       type: Boolean,
       default: false,
     },
-    courseMarks: courseMarksSchema,
+    courseMarks: {
+      type: courseMarksSchema,
+      default: {},
+    },
     grade: {
       type: String,
       enum: grade,
+      default: "NA",
     },
     gradePoint: {
-      type: String,
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true },

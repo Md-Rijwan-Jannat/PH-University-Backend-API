@@ -1,14 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { catchAsync } from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { UserServices } from "./user.services";
-import { IUploadedFile } from "./user.interface";
 
 // create student
 const createStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body;
+
+  console.log(req.file);
+
   const result = await UserServices.createStudentIntoDB(
-    req.file as IUploadedFile,
+    req.file as any,
     password,
     studentData,
   );
@@ -26,7 +29,7 @@ const createFaculty = catchAsync(async (req, res) => {
   const { password, faculty: facultyData } = req.body;
 
   const result = await UserServices.createFacultyIntoDB(
-    req.file as IUploadedFile,
+    req.file as any,
     password,
     facultyData,
   );
@@ -43,7 +46,7 @@ const createAdmin = catchAsync(async (req, res) => {
   const { password, admin: adminData } = req.body;
 
   const result = await UserServices.createAdminIntoDB(
-    req.file as IUploadedFile,
+    req.file as any,
     password,
     adminData,
   );
