@@ -1,4 +1,3 @@
- 
 import { Model, Types } from "mongoose";
 
 export interface ISemesterRegistration {
