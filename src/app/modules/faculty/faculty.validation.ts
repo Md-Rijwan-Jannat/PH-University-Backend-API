@@ -78,7 +78,7 @@ const createFacultyValidationSchema = z.object({
         })
         .trim()
         .describe("Contact number is required"),
-      emergencyContactNo: z
+      emergencyNo: z
         .string({
           invalid_type_error: "This field must be a string",
           required_error: "This field are required",
@@ -99,13 +99,22 @@ const createFacultyValidationSchema = z.object({
         })
         .trim()
         .describe("Permanent address is required"),
+      academicDepartment: z.string({
+        required_error: "Academic department is required",
+      }),
+      academicFaculty: z
+        .string({
+          required_error: "Academic faculty is required",
+        })
+        .optional(),
       profileImage: z
         .string({
           invalid_type_error: "This field must be a string",
           required_error: "This field are required",
         })
         .trim()
-        .describe("Faculty avatar is required"),
+        .describe("Faculty avatar is required")
+        .optional(),
     }),
   }),
 });

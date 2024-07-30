@@ -62,8 +62,6 @@ academicFacultySchema.pre("findOneAndUpdate", async function (next) {
     throw new AppError(httpStatus.NOT_FOUND, "This faculty doesn't exist!");
   }
 
-  console.log(query._id, isExistingFaculty);
-
   next();
 });
 

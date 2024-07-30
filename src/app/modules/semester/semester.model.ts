@@ -95,8 +95,6 @@ semesterSchema.pre("findOneAndUpdate", async function (next) {
     throw new AppError(httpStatus.NOT_FOUND, "This semester doesn't exist!");
   }
 
-  console.log(query._id, isExistingSemester);
-
   next();
 });
 

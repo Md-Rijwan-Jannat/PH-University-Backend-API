@@ -17,7 +17,7 @@ export interface IAdmin {
   email: string;
   dateOfBirth: string;
   contactNo: string;
-  emergencyContactNo: string;
+  emergencyNo: string;
   presentAddress: string;
   permanentAddress: string;
   profileImage: string;

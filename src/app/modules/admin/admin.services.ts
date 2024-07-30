@@ -55,7 +55,6 @@ const updateSingleAdminFromDB = async (
 
 // delete admin service
 const deleteAdminFromDB = async (id: string) => {
-  console.log(id);
   const session = await mongoose.startSession();
 
   try {

@@ -64,7 +64,7 @@ const adminSchema = new Schema<IAdmin, IAdminModel>(
       required: [true, "Contact number is required"],
       trim: true,
     },
-    emergencyContactNo: {
+    emergencyNo: {
       type: String,
       required: [true, "Emergency contact number is required"],
       trim: true,

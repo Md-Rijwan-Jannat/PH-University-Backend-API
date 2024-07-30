@@ -11,8 +11,6 @@ import { sEndEmail } from "../../utils/sendEmail";
 const authLogin = async (payload: IAuthLogin) => {
   const user = await User.isUserExistingByCustomId(payload.id);
 
-  console.log(user);
-
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
   }
@@ -90,12 +88,10 @@ const changePasswordIntoDB = async (
       new: true,
     },
   );
-  console.log(result, payload);
   return result;
 };
 
 const refreshToken = async (token: string) => {
-  console.log(token);
   const decoded = jwt.verify(
     token,
     config.jwt_refresh_token as string,
@@ -171,7 +167,6 @@ const forgetPasswordIntoDB = async (userId: string) => {
   const resetLink = `${config.reset_link_url}?id=${user.id}&token=${resetToken}`;
 
   sEndEmail(user.email, resetLink);
-  console.log(resetLink);
 };
 
 const resetPasswordIntoDB = async (

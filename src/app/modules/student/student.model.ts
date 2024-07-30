@@ -156,7 +156,9 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
     },
     profileImage: {
       type: String,
-      required: [true, "Profile image is required"],
+      trim: true,
+      default:
+        "https://i.ibb.co/T4t96zZ/blank-profile-picture-973460-960-720.webp",
     },
     admissionSemester: {
       type: Schema.Types.ObjectId,
@@ -167,6 +169,11 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
       type: Schema.Types.ObjectId,
       required: [true, "Academic department is required"],
       ref: "AcademicDepartment",
+    },
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      required: [true, "Academic Faculty is required"],
+      ref: "AcademicFaculty",
     },
     isDeleted: { type: Boolean, default: false },
   },

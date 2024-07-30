@@ -78,7 +78,7 @@ const createAdminValidationSchema = z.object({
         })
         .trim()
         .describe("Contact number is required"),
-      emergencyContactNo: z
+      emergencyNo: z
         .string({
           invalid_type_error: "This field must be a string",
           required_error: "This field are required",

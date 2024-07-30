@@ -109,7 +109,7 @@ const sendEmail = async (to: string, resetLink: string) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully");
+    // console.log("Email sent successfully");
   } catch (error) {
     console.error("Error sending email:", error);
   }

@@ -69,9 +69,6 @@ academicDepartmentSchema.pre("findOneAndUpdate", async function (next) {
   if (!isExistingDepartment) {
     throw new AppError(httpStatus.NOT_FOUND, "This department doesn't exist!");
   }
-
-  console.log(query._id, isExistingDepartment);
-
   next();
 });
 

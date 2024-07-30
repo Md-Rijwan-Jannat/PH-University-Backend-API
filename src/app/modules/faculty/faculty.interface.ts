@@ -17,10 +17,10 @@ export interface IFaculty {
   email: string;
   dateOfBirth: string;
   contactNo: string;
-  emergencyContactNo: string;
+  emergencyNo: string;
   presentAddress: string;
   permanentAddress: string;
-  profileImage: string;
+  profileImage?: string;
   academicDepartment: Types.ObjectId;
   academicFaculty: Types.ObjectId;
   isDeleted: boolean;

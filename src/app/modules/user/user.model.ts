@@ -35,7 +35,7 @@ export const userSchema = new Schema<IUser, UserModel>(
     },
     role: {
       type: String,
-      enum: ["admin", "student", "faculty"],
+      enum: ["superAdmin", "admin", "student", "faculty"],
       trim: true,
     },
     status: {

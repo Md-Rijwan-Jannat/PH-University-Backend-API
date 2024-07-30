@@ -59,7 +59,7 @@ const facultySchema = new Schema<IFaculty, IFacultyModel>(
       required: [true, "Contact number is required"],
       trim: true,
     },
-    emergencyContactNo: {
+    emergencyNo: {
       type: String,
       required: [true, "Emergency contact number is required"],
       trim: true,
@@ -76,7 +76,9 @@ const facultySchema = new Schema<IFaculty, IFacultyModel>(
     },
     profileImage: {
       type: String,
-      required: [true, "Profile image is required"],
+      trim: true,
+      default:
+        "https://i.ibb.co/T4t96zZ/blank-profile-picture-973460-960-720.webp",
     },
     academicDepartment: {
       type: Schema.Types.ObjectId,
@@ -138,8 +140,8 @@ facultySchema.pre("findOneAndUpdate", async function (next) {
 });
 
 // Custom static method to check existence
-facultySchema.static("findOneOrThrowError", async function (id: string) {
-  const faculty: IFaculty | null = await this.findOne({ id });
+facultySchema.static("findOneOrThrowError", async function (_id: string) {
+  const faculty: IFaculty | null = await this.findOne({ _id });
   if (!faculty) {
     throw new AppError(httpStatus.NOT_FOUND, "This faculty doesn't exist!");
   }

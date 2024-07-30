@@ -19,7 +19,6 @@ const getAllStudents = catchAsync(async (req, res) => {
 const getSingleStudent = catchAsync(async (req, res) => {
   const { studentId } = req.params;
   // const student = await Student.findOneOrThrowError(studentId as string);
-  console.log(studentId);
 
   const result = await StudentServices.getSingleStudentFromDB(studentId);
   sendResponse(res, {

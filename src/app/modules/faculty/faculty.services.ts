@@ -10,12 +10,8 @@ import { searchingFields } from "./faculty.constants";
 const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
   const filterQuery = new QueryBuilder(
     Faculty.find()
-      .populate({
-        path: "academicDepartment",
-        populate: {
-          path: "academicFaculty",
-        },
-      })
+      .populate("user")
+      .populate("academicDepartment")
       .populate("academicFaculty"),
     query,
   )
@@ -33,12 +29,8 @@ const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
 // Get single faculty service
 const getSingleFacultyFromDB = async (id: string) => {
   const result = await Faculty.findOne({ id })
-    .populate({
-      path: "academicDepartment",
-      populate: {
-        path: "academicFaculty",
-      },
-    })
+    .populate("user")
+    .populate("academicDepartment")
     .populate("academicFaculty");
   return result;
 };
@@ -67,12 +59,8 @@ const updateSingleFacultyFromDB = async (
       runValidators: true,
     },
   )
-    .populate({
-      path: "academicDepartment",
-      populate: {
-        path: "academicFaculty",
-      },
-    })
+    .populate("user")
+    .populate("academicDepartment")
     .populate("academicFaculty");
 
   return result;
@@ -80,7 +68,6 @@ const updateSingleFacultyFromDB = async (
 
 // delete faculty service
 const deleteFacultyFromDB = async (id: string) => {
-  console.log(id);
   const session = await mongoose.startSession();
 
   try {

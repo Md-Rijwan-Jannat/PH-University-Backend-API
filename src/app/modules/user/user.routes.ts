@@ -8,12 +8,13 @@ import { USER_ROLE } from "./user.constants";
 import { Auth } from "../../middlewares/Auth";
 import { UserValidation } from "./user.validation";
 import { upload } from "../../utils/sendImageToCloudinary";
+import httpStatus from "http-status";
 
 const router = Router();
 
 router.post(
   "/create-student",
-  Auth(USER_ROLE.admin),
+  Auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -22,7 +23,9 @@ router.post(
       }
       next();
     } catch (error) {
-      return res.status(400).json({ message: "Invalid JSON data" });
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ message: "Invalid JSON data" });
     }
   },
   ValidationRequest(studentValidations.createStudentValidationSchema),
@@ -31,7 +34,7 @@ router.post(
 
 router.post(
   "/create-faculty",
-  Auth(USER_ROLE.admin),
+  Auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -49,7 +52,7 @@ router.post(
 
 router.post(
   "/create-admin",
-  // Auth(USER_ROLE.admin),
+  Auth(USER_ROLE.superAdmin),
   upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -67,13 +70,18 @@ router.post(
 
 router.get(
   "/me",
-  Auth(USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
+  Auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.faculty,
+    USER_ROLE.student,
+  ),
   UserController.getMe,
 );
 
 router.patch(
   "/user-status-change/:id",
-  Auth(USER_ROLE.admin),
+  Auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   ValidationRequest(UserValidation.userStatusChangeValidationSchema),
   UserController.userStatusChange,
 );

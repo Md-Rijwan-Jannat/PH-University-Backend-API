@@ -9,7 +9,7 @@ const router = Router();
 
 router.post(
   "/create-academic-department",
-  Auth(USER_ROLE.admin),
+  Auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   RequestValidation(
     AcademicDepartmentValidation.createAcademicDepartmentValidationSchema,
   ),

@@ -58,7 +58,6 @@ const updateSingleOfferedCourse = catchAsync(async (req, res) => {
 
 const deleteSingleOfferedCourse = catchAsync(async (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   const result = await OfferedCourseService.deleteSingleOfferedCourseFormDB(id);
 
