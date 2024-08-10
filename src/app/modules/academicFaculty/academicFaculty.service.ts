@@ -1,3 +1,5 @@
+import QueryBuilder from "../../builder/QueryBuilder";
+import { AcademicFacultySearchableFields } from "./academicFaculty.constants";
 import { IAcademicFaculty } from "./academicFaculty.interface";
 import { AcademicFaculty } from "./academicFaculty.model";
 
@@ -8,9 +10,26 @@ const createAcademicFacultyIntoDB = async (payload: IAcademicFaculty) => {
 };
 
 // Get all faculty service
-const getAllAcademicFacultyFromDB = async () => {
-  const result = await AcademicFaculty.find();
-  return result;
+const getAllAcademicFacultyFromDB = async (query: Record<string, unknown>) => {
+  const academicFacultyQueryBuilder = new QueryBuilder(
+    AcademicFaculty.find(),
+    query,
+  );
+
+  const modifiedQuery = academicFacultyQueryBuilder
+    .search(AcademicFacultySearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await modifiedQuery.modelQuery;
+  const meta = await academicFacultyQueryBuilder.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 // Get single academic faculty service

@@ -8,6 +8,9 @@ import { AcademicFaculty } from "../academicFaculty/academicFaculty.model";
 import { Course } from "../course/course.model";
 import { Faculty } from "../faculty/faculty.model";
 import { HashScheduleConflict } from "./offeredCourse.utils";
+import { Student } from "../student/student.model";
+import QueryBuilder from "../../builder/QueryBuilder";
+import { offeredCourseSearchableFields } from "./offeredCourse.constants";
 
 const createOfferedCourseIntoDB = async (payload: IOfferedCourse) => {
   const {
@@ -120,15 +123,211 @@ const createOfferedCourseIntoDB = async (payload: IOfferedCourse) => {
   // return null;
 };
 
-const getAllOfferedCourseFromDB = async () => {
-  const result = await OfferedCourse.find()
-    .populate("semesterRegistration")
-    .populate("academicSemester")
-    .populate("academicFaculty")
-    .populate("academicDepartment")
-    .populate("course")
-    .populate("faculty");
-  return result;
+const getAllOfferedCourseFromDB = async (query: Record<string, unknown>) => {
+  const offeredCourseQueryBuilder = new QueryBuilder(
+    OfferedCourse.find()
+      .populate("semesterRegistration")
+      .populate("academicSemester")
+      .populate("academicFaculty")
+      .populate("academicDepartment")
+      .populate("course")
+      .populate("faculty"),
+    query,
+  )
+    .search(offeredCourseSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await offeredCourseQueryBuilder.modelQuery;
+  const meta = await offeredCourseQueryBuilder.countTotal();
+
+  return {
+    meta,
+    result,
+  };
+};
+
+const getMyOfferedCourseFromDB = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  const student = await Student.findOne({ id: userId });
+
+  if (!student) {
+    throw new AppError(httpStatus.NOT_FOUND, "Student not found");
+  }
+
+  if (!student.academicDepartment) {
+    throw new AppError(httpStatus.NOT_FOUND, "Academic department not found");
+  }
+
+  if (!student.academicFaculty) {
+    throw new AppError(httpStatus.NOT_FOUND, "Academic faculty not found");
+  }
+
+  const currentOngoingRegistrationSemester = await SemesterRegistration.findOne(
+    { status: "UPCOMING" },
+  );
+
+  if (!currentOngoingRegistrationSemester) {
+    throw new AppError(httpStatus.NOT_FOUND, "There is no ongoing semester");
+  }
+
+  const page = Number(query?.page) || 1;
+  const limit = Number(query?.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const aggregationQuery = [
+    {
+      $match: {
+        semesterRegistration: currentOngoingRegistrationSemester?._id,
+        academicFaculty: student.academicFaculty,
+        academicDepartment: student.academicDepartment,
+      },
+    },
+    {
+      $lookup: {
+        from: "courses",
+        localField: "course",
+        foreignField: "_id",
+        as: "course",
+      },
+    },
+    {
+      $unwind: "$course",
+    },
+    {
+      $lookup: {
+        from: "enrolledcourses",
+        let: {
+          currentOngoingRegistrationSemester:
+            currentOngoingRegistrationSemester?._id,
+          currentStudent: student._id,
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: [
+                      "$semesterRegistration",
+                      "$$currentOngoingRegistrationSemester",
+                    ],
+                  },
+                  {
+                    $eq: ["$student", "$$currentStudent"],
+                  },
+                  {
+                    $eq: ["$isEnrolled", true],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        as: "enrolledCourses",
+      },
+    },
+    {
+      $lookup: {
+        from: "enrolledcourses",
+        let: {
+          currentStudent: student._id,
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ["$student", "$$currentStudent"],
+                  },
+                  {
+                    $eq: ["$isComplete", true],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        as: "completedCourses",
+      },
+    },
+    {
+      $addFields: {
+        completedCourseIds: {
+          $map: {
+            input: "$completedCourses",
+            as: "completed",
+            in: "$$completed.course",
+          },
+        },
+      },
+    },
+    {
+      $addFields: {
+        isPreRequisitesFullFilled: {
+          $or: [
+            { $eq: ["$course.preRequisitesCourses", []] },
+            {
+              $setIsSubset: [
+                "$course.preRequisitesCourses.course",
+                "$completedCourseIds",
+              ],
+            },
+          ],
+        },
+        isAlreadyEnrolled: {
+          $in: [
+            "$course._id",
+            {
+              $map: {
+                input: "$enrolledCourses",
+                as: "enrolledCourse",
+                in: "$$enrolledCourse.course",
+              },
+            },
+          ],
+        },
+      },
+    },
+    {
+      $match: {
+        isAlreadyEnrolled: false,
+        isPreRequisitesFullFilled: true,
+      },
+    },
+  ];
+
+  const paginationQuery = [
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+  ];
+
+  const result = await OfferedCourse.aggregate([
+    ...aggregationQuery,
+    ...paginationQuery,
+  ]);
+
+  const total = (await OfferedCourse.aggregate([...aggregationQuery])).length;
+  const totalPage = Math.ceil(result.length / limit);
+
+  return {
+    meta: {
+      limit,
+      page,
+      total,
+      totalPage,
+    },
+    result,
+  };
 };
 
 const getSingleOfferedCourseFromDB = async (id: string) => {
@@ -230,6 +429,7 @@ const deleteSingleOfferedCourseFormDB = async (id: string) => {
 export const OfferedCourseService = {
   createOfferedCourseIntoDB,
   getAllOfferedCourseFromDB,
+  getMyOfferedCourseFromDB,
   getSingleOfferedCourseFromDB,
   updateOfferedCourseIntoDB,
   deleteSingleOfferedCourseFormDB,

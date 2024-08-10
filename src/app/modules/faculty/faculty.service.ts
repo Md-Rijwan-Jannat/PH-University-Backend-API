@@ -8,7 +8,7 @@ import QueryBuilder from "../../builder/QueryBuilder";
 import { searchingFields } from "./faculty.constants";
 
 const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
-  const filterQuery = new QueryBuilder(
+  const filterQueryBuilder = new QueryBuilder(
     Faculty.find()
       .populate("user")
       .populate("academicDepartment")
@@ -21,9 +21,13 @@ const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
     .paginate()
     .fields();
 
-  const result = await filterQuery.modelQuery;
+  const result = await filterQueryBuilder.modelQuery;
+  const meta = await filterQueryBuilder.countTotal();
 
-  return result;
+  return {
+    meta,
+    result,
+  };
 };
 
 // Get single faculty service

@@ -206,7 +206,7 @@ export const updateEnrolledCourseMark = async (
   }
 
   const MAX_CLASS_TEST_1 = 20;
-  const MAX_CLASS_TEST_2 = 40;
+  const MAX_CLASS_TEST_2 = 20;
   const MAX_MID_TERM = 60;
   const MAX_FINAL_TERM = 90;
 

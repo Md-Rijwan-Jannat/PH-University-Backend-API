@@ -57,6 +57,14 @@ const semesterCodeData: TSemesterCodeData = {
   "Semester-8": "08",
 };
 
+export const SemesterSearchableFields = [
+  "name",
+  "year",
+  "code",
+  "startMonth",
+  "endMonth",
+];
+
 export const SemesterDetails = {
   Months,
   SemesterNames,

@@ -8,16 +8,20 @@ import QueryBuilder from "../../builder/QueryBuilder";
 import { searchingFields } from "./admin.constant";
 
 const getAllAdminFromDB = async (query: Record<string, unknown>) => {
-  const filterQuery = new QueryBuilder(Admin.find(), query)
+  const filterQueryBuilder = new QueryBuilder(Admin.find(), query)
     .search(searchingFields)
     .filter()
     .sort()
     .paginate()
     .fields();
 
-  const result = await filterQuery.modelQuery;
+  const result = await filterQueryBuilder.modelQuery;
+  const meta = await filterQueryBuilder.countTotal();
 
-  return result;
+  return {
+    meta,
+    result,
+  };
 };
 
 // Get single admin service
