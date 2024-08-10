@@ -1,4 +1,4 @@
-import { StudentServices } from "./student.services";
+import { StudentServices } from "./student.service";
 import { catchAsync } from "../../utils/catchAsync";
 import httpStatus from "http-status";
 import sendResponse from "../../utils/sendResponse";
@@ -11,7 +11,8 @@ const getAllStudents = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "Students are retrieved successfully!",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

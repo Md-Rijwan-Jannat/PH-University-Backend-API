@@ -1,4 +1,4 @@
-import { FacultyServices } from "./faculty.services";
+import { FacultyServices } from "./faculty.service";
 import { catchAsync } from "../../utils/catchAsync";
 import httpStatus from "http-status";
 import sendResponse from "../../utils/sendResponse";
@@ -14,7 +14,8 @@ const grtAllFaculties = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "Faculty are retrieved successfully!",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 
