@@ -2,7 +2,7 @@
 
 This is a Node.js application built with Express.js, MongoDB (using Mongoose), and TypeScript.
 
-![Backend Diagram](https://i.ibb.co/BspVS2p/Screenshot-2024-06-19-104207.png)
+![image](https://github.com/user-attachments/assets/a6fe94d9-a2a4-4802-ac5c-cda5dad6293e)
 
 <h1 align="center">
   PH University management diagram 🚀
